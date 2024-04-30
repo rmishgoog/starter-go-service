@@ -1,0 +1,32 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+## Bootstrap a single node kind cluster & for ease of debugging & local development, map container ports to host ports.
+nodes:
+- role: control-plane
+  # resources:
+  #   limits:
+  #     cpu: 3
+  #     memory: 2Gi
+  extraPortMappings:
+  - containerPort: 3000 #Sales-Api
+    hostPort: 3000
+  - containerPort: 3010 #Sales-Api debug
+    hostPort: 3010
+  - containerPort: 4000 ## Metrics
+    hostPort: 4000
+  - containerPort: 4010 ## Metrics debug
+    hostPort: 4010
+  - containerPort: 4020 ## Metrics Prometheus
+    hostPort: 4020
+  - containerPort: 6000 ## Auth
+    hostPort: 6000
+  - containerPort: 6010 ## Auth debug
+    hostPort: 6010
+  - containerPort: 3100 ## Grafana
+    hostPort: 3100
+  - containerPort: 5432 ## Postgres
+    hostPort: 5432
+  - containerPort: 9090 ## Prometheus
+    hostPort: 9090
+  - containerPort: 9411 ## Tempo (tracing)
+    hostPort: 9411
