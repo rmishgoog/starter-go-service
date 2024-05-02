@@ -20,3 +20,9 @@ COPY --from=build_sales --chown=sales:sales /service/app/services/sales-api/sale
 WORKDIR /services
 USER sales
 CMD [ "./sales-api" ]
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="sales-api" \
+      org.opencontainers.image.authors="Rohit Mishra <rohitmishra@google.com>" \
+      org.opencontainers.image.source="https://github.com/rmishgoog/starter-go-service" \
+      org.opencontainers.image.revision="${BUILD_REF}"
