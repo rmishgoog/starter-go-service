@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales
+  namespace: sales-system
+spec:
+  selector:
+    matchLabels:
+      env: dev
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        env: dev
+    spec:
+      containers:
+        - resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
+          name: sales
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true

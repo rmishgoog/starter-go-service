@@ -25,6 +25,14 @@ AUTH_IMAGE      := $(BASE_IMAGE_NAME)/$(AUTH_APP):$(VERSION)
 # ===========================================================================
 
 # ===========================================================================
+# Echo the environment variables
+
+echo-env:
+	 @echo $(SALES_APP)
+	 @echo $(VERSION)
+	 @echo $(SALES_IMAGE)
+
+# ===========================================================================
 # Run locally & do log formatting
 run:
 	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
@@ -57,3 +65,17 @@ sales:
 		--build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		.
 # =============================================================================
+
+# =============================================================================
+# Set up dev cluster
+
+dev-load:
+	kind load docker-image $(SALES_IMAGE) --name $(KIND_CLUSTER)
+
+dev-apply:
+	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
+	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
+
+dev-restart:
+	kubectl rollout restart deployment $(SALES_APP) --namespace=$(NAMESPACE)
+# ==============================================================================
