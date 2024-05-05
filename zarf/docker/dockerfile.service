@@ -6,20 +6,17 @@ ARG BUILD_REF
 # Keep it simple to begin with and later optimize the build
 COPY . /service
 WORKDIR /service/app/services/sales-api
-RUN go build -ldflags "-X main.build=${BUILD_REF}"
+RUN go build -o /go/bin/sales-api -ldflags "-X main.build=${BUILD_REF}"
 
-FROM alpine:3.19
+# Using Google provided distroless images for minimal footprints & attack surface
+FROM gcr.io/distroless/static-debian12
 ARG BUILD_DATE
 ARG BUILD_REF
 
-# Always add a user & a group and make sure that the executable is running as this user, not as a root inside the container
-RUN addgroup -g 1000 -S sales && \
-    adduser -u 1000 -h /service -G sales -S sales
-# Copy the executable from the previous image
-COPY --from=build_sales --chown=sales:sales /service/app/services/sales-api/sales-api /service/sales-api
-WORKDIR /services
-USER sales
-CMD [ "./sales-api" ]
+# Copy the executable from the previous image & execute the Go platform binary
+COPY --from=build_sales --chown=sales:sales /go/bin/sales-api /
+
+ENTRYPOINT [ "./sales-api" ]
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="sales-api" \

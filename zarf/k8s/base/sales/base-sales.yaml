@@ -19,15 +19,18 @@ spec:
       labels:
         app: sales
     spec:
-      terminationGracePeriodSecond: 60
       containers:
       - name: sales
         image: sales-image
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
         resources:
           requests:
             memory: "64Mi"
             cpu: "250m"
           limits:
-            memory: "128Mi"
-            cpu: "500m"
+            memory: "64Mi"
+            cpu: "240"
     

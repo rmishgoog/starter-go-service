@@ -17,6 +17,7 @@ LOKI            := grafana/loki:2.9.0
 PROMTAIL        := grafana/promtail:2.9.0
 AUTH_APP        := auth
 SALES_APP		:= sales
+NAMESPACE		:= sales-system
 BASE_IMAGE_NAME := gcr.io/rmishra-kubernetes-playground
 VERSION			:= 0.0.1
 SALES_IMAGE		:= $(BASE_IMAGE_NAME)/$(SALES_APP):$(VERSION)
@@ -76,10 +77,13 @@ dev-load:
 
 dev-apply:
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
-	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
+#	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
+
+dev-status:
+	watch -n 2 kubectl get pods -o wide --all-namespaces
 
 dev-logs:
-	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run apis/tooling/logfmt/main.go -service=$(SALES_APP)
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run app/tooling/logfmt/main.go -service=$(SALES_APP)
 
 dev-restart:
 	kubectl rollout restart deployment $(SALES_APP) --namespace=$(NAMESPACE)
