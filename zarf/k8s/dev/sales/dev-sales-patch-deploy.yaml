@@ -19,10 +19,15 @@ spec:
         - resources:
             requests:
               memory: "64Mi"
-              cpu: "250m"
+              cpu: "500m"
             limits:
               memory: "128Mi"
               cpu: "500m"
           name: sales
+          env:
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true

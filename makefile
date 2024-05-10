@@ -70,7 +70,7 @@ sales:
 # =============================================================================
 # Set up the application on development (local kind) cluster
 
-bootsrap-app:	dev-load dev-apply dev-logs
+bootsrap-app:	dev-load dev-apply dev-status dev-logs
 
 dev-load:
 	kind load docker-image $(SALES_IMAGE) --name $(KIND_CLUSTER)
@@ -80,7 +80,7 @@ dev-apply:
 #	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
 
 dev-status:
-	watch -n 2 kubectl get pods -o wide --all-namespaces
+	kubectl wait --for=condition=Ready --timeout=30s --namespace=$(NAMESPACE) pods -l app=$(SALES_APP)
 
 dev-logs:
 	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run app/tooling/logfmt/main.go
