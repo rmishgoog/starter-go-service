@@ -37,6 +37,10 @@ echo-env:
 # Run locally & do log formatting
 run:
 	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
+
+
+run-help:
+	go run app/services/sales-api/main.go --help | go run app/tooling/logfmt/main.go
 # ===========================================================================
 
 # ===========================================================================
@@ -88,3 +92,10 @@ dev-logs:
 dev-restart:
 	kubectl rollout restart deployment $(SALES_APP) --namespace=$(NAMESPACE)
 # ==============================================================================
+
+# ==============================================================================
+# Go mod management
+
+tidy:
+	go mod tidy
+	go mod vendor
