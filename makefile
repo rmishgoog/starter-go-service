@@ -19,7 +19,7 @@ AUTH_APP        := auth
 SALES_APP		:= sales
 NAMESPACE		:= sales-system
 BASE_IMAGE_NAME := gcr.io/rmishra-kubernetes-playground
-VERSION			:= 0.0.1
+VERSION			:= 0.0.2
 SALES_IMAGE		:= $(BASE_IMAGE_NAME)/$(SALES_APP):$(VERSION)
 METRICS_IMAGE   := $(BASE_IMAGE_NAME)/metrics:$(VERSION)
 AUTH_IMAGE      := $(BASE_IMAGE_NAME)/$(AUTH_APP):$(VERSION)
@@ -103,5 +103,5 @@ tidy:
 # Local curl on localhost
 
 curl:
-	curl -il http://localhost:3000/v1/hack
+	curl -il http://localhost:3000/hack
 #================================================================================

@@ -22,6 +22,11 @@ spec:
       containers:
       - name: sales
         image: sales-image
+        ports:
+        - name: sales
+          containerPort: 3000
+        - name: sales-debug
+          containerPort: 3010
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
@@ -33,4 +38,15 @@ spec:
           limits:
             memory: "64Mi"
             cpu: "250m"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-service
+  namespace: sales-system
+spec:
+  selector:
+    app: sales
     
