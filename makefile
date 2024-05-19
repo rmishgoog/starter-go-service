@@ -81,7 +81,6 @@ dev-load:
 
 dev-apply:
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
-#	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
 
 dev-status:
 	kubectl wait --for=condition=Ready --timeout=30s --namespace=$(NAMESPACE) pods -l app=$(SALES_APP)
@@ -99,3 +98,10 @@ dev-restart:
 tidy:
 	go mod tidy
 	go mod vendor
+
+#================================================================================
+# Local curl on localhost
+
+curl:
+	curl -il http://localhost:3000/v1/hack
+#================================================================================

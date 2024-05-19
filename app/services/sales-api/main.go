@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
+	v1 "github.com/rmishgoog/starter-go-service/business/web/v1"
 	"github.com/rmishgoog/starter-go-service/business/web/v1/debug"
 	"github.com/rmishgoog/starter-go-service/foundations/logger"
 )
@@ -84,7 +85,8 @@ func run(ctx context.Context, log *logger.Logger) error {
 		return fmt.Errorf("generating config for output: %w", err)
 	}
 	log.Info(ctx, "startup", "config", out)
-	// Starting the Debugger Service & creating a mux for debugger
+
+	// Building a mux for the debugger
 	go func() {
 		log.Info(ctx, "startup", "status", "debug v1 router started", "host", cfg.Web.DebugHost)
 
@@ -96,10 +98,17 @@ func run(ctx context.Context, log *logger.Logger) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
-	// Building a mux for web services
+	// Building a mux for web services, starting with a config
+	cfgMux := v1.APIMuxConfig{
+		Build:    build,
+		Shutdown: shutdown,
+		Log:      log,
+	}
+	// Build the handler with the config created above
+	apiMux := v1.APIMux(cfgMux)
 	api := http.Server{
 		Addr:    cfg.Web.APIHost,
-		Handler: nil,
+		Handler: apiMux,
 		//Handler:      mux.WebAPI(cfgMux, buildRoutes(), mux.WithCORS(cfg.Web.CORSAllowedOrigins)),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
@@ -131,10 +140,6 @@ func run(ctx context.Context, log *logger.Logger) error {
 			return fmt.Errorf("could not stop server gracefully: %w", err)
 		}
 	}
-
-	//sig := <-shutdown
-	//log.Info(ctx, "shutdown", "status", "shutdown started", "signal", sig)
-	//defer log.Info(ctx, "shutdown", "status", "shutdown complete", "signal", sig)
 
 	return nil
 
