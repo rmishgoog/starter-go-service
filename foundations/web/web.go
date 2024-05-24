@@ -1,6 +1,9 @@
 package web
 
 import (
+	"context"
+	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/dimfeld/httptreemux/v5"
@@ -26,4 +29,20 @@ func NewApp(shutdown chan os.Signal) *App {
 		ContextMux: httptreemux.NewContextMux(),
 		shutdown:   shutdown,
 	}
+}
+
+type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) error
+
+// Handle sets a handler function for a given HTTP method and path pair
+// to the application server mux.
+func (a *App) Handle(method string, path string, handler Handler) {
+
+	h := func(w http.ResponseWriter, r *http.Request) {
+		// ADD ANY LOGIC HERE BEFORE CALLING THE REAL FRIKIN MUX
+		if err := handler(r.Context(), w, r); err != nil {
+			fmt.Println(err) // To be implemented later
+		}
+	}
+
+	a.ContextMux.Handle(method, path, h)
 }

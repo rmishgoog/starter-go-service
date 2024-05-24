@@ -10,13 +10,13 @@ func Want(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func Hack(w http.ResponseWriter, r *http.Request) {
+func Hack(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
 	status := struct {
 		Status string
 	}{
 		Status: "OK",
 	}
-	json.NewEncoder(w).Encode(status)
+	return json.NewEncoder(w).Encode(status)
 
 }
