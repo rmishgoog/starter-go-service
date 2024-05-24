@@ -3,9 +3,9 @@ package hackgrp
 import (
 	"net/http"
 
-	"github.com/dimfeld/httptreemux/v5"
+	"github.com/rmishgoog/starter-go-service/foundations/web"
 )
 
-func Routes(mux *httptreemux.ContextMux) {
-	mux.Handle(http.MethodGet, "/hack", Hack)
+func Routes(app *web.App) {
+	app.Handle(http.MethodGet, "/hack", Hack) // Using method promotions via embeddings (composition)
 }

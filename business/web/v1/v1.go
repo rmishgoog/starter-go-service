@@ -3,8 +3,8 @@ package v1
 import (
 	"os"
 
-	"github.com/dimfeld/httptreemux/v5"
 	"github.com/rmishgoog/starter-go-service/foundations/logger"
+	"github.com/rmishgoog/starter-go-service/foundations/web"
 )
 
 type APIMuxConfig struct {
@@ -14,11 +14,12 @@ type APIMuxConfig struct {
 }
 
 type RouteAdder interface {
-	Add(mux *httptreemux.ContextMux, cfg APIMuxConfig)
+	Add(app *web.App, cfg APIMuxConfig)
 }
 
-func APIMux(cfg APIMuxConfig, routeAdder RouteAdder) *httptreemux.ContextMux {
-	mux := httptreemux.NewContextMux()
-	routeAdder.Add(mux, cfg)
-	return mux
+func APIMux(cfg APIMuxConfig, routeAdder RouteAdder) *web.App {
+	//mux := httptreemux.NewContextMux()
+	app := web.NewApp(cfg.Shutdown)
+	routeAdder.Add(app, cfg)
+	return app
 }
