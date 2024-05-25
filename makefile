@@ -110,5 +110,5 @@ curl:
 # Build image, upload and restart the deployment. This is useful for quick build &
 # image uploads, followed by container restart
 
-dev-update:	build	dev-load	dev-restart
+dev-update:	build	dev-load	dev-apply	dev-restart
 # ===============================================================================

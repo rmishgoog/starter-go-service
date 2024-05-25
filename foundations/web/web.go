@@ -41,13 +41,10 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...MiddleWa
 
 	handler = wrapMiddleware(mw, handler)
 	handler = wrapMiddleware(a.mw, handler)
-
 	h := func(w http.ResponseWriter, r *http.Request) {
-		// ADD ANY LOGIC HERE BEFORE CALLING THE REAL FRIKIN MUX
 		if err := handler(r.Context(), w, r); err != nil {
-			fmt.Println(err) // To be implemented later
+			fmt.Println(err)
 		}
 	}
-
 	a.ContextMux.Handle(method, path, h)
 }

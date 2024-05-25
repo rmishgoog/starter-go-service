@@ -19,7 +19,6 @@ type RouteAdder interface {
 }
 
 func APIMux(cfg APIMuxConfig, routeAdder RouteAdder) *web.App {
-	//mux := httptreemux.NewContextMux()
 	app := web.NewApp(cfg.Shutdown, mid.Logger(cfg.Log))
 	routeAdder.Add(app, cfg)
 	return app

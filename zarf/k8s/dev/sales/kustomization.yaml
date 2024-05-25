@@ -8,4 +8,4 @@ patches:
 images:
   - name: sales-image
     newName: gcr.io/rmishra-kubernetes-playground/sales
-    newTag: 0.0.1
+    newTag: 0.0.2

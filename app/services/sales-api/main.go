@@ -106,11 +106,10 @@ func run(ctx context.Context, log *logger.Logger) error {
 		Log:      log,
 	}
 	// Build the handler with the config created above
-	apiMux := v1.APIMux(cfgMux, handlers.Routes{}) // This essentially gives you a handler
+	apiMux := v1.APIMux(cfgMux, handlers.Routes{}) // This essentially gives you a handler (App is a http.Handler through embedding the Mux?)
 	api := http.Server{
-		Addr:    cfg.Web.APIHost,
-		Handler: apiMux,
-		//Handler:      mux.WebAPI(cfgMux, buildRoutes(), mux.WithCORS(cfg.Web.CORSAllowedOrigins)),
+		Addr:         cfg.Web.APIHost,
+		Handler:      apiMux,
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,
@@ -120,7 +119,7 @@ func run(ctx context.Context, log *logger.Logger) error {
 	serverErrors := make(chan error, 1)
 
 	go func() {
-		log.Info(ctx, "startup", "status", "api router started", "host", api.Addr)
+		log.Info(ctx, "startup", "status", "api router started again....", "host", api.Addr)
 
 		serverErrors <- api.ListenAndServe()
 	}()
