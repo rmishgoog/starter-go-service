@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/dimfeld/httptreemux/v5"
+	"github.com/google/uuid"
 )
 
 type App struct {
@@ -42,8 +44,16 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...MiddleWa
 	handler = wrapMiddleware(mw, handler)
 	handler = wrapMiddleware(a.mw, handler)
 	h := func(w http.ResponseWriter, r *http.Request) {
-		if err := handler(r.Context(), w, r); err != nil {
+
+		v := Values{
+			TraceID: uuid.NewString(),
+			Now:     time.Now().UTC(),
+		}
+
+		ctx := setValues(r.Context(), &v)
+		if err := handler(ctx, w, r); err != nil {
 			fmt.Println(err)
+			return
 		}
 	}
 	a.ContextMux.Handle(method, path, h)

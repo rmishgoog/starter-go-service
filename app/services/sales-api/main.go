@@ -22,6 +22,7 @@ import (
 	v1 "github.com/rmishgoog/starter-go-service/business/web/v1"
 	"github.com/rmishgoog/starter-go-service/business/web/v1/debug"
 	"github.com/rmishgoog/starter-go-service/foundations/logger"
+	"github.com/rmishgoog/starter-go-service/foundations/web"
 )
 
 var build = "develop"
@@ -36,7 +37,7 @@ func main() {
 	}
 
 	traceIDFunc := func(ctx context.Context) string {
-		return "123456789"
+		return web.GetTraceID(ctx)
 
 	}
 
@@ -119,7 +120,7 @@ func run(ctx context.Context, log *logger.Logger) error {
 	serverErrors := make(chan error, 1)
 
 	go func() {
-		log.Info(ctx, "startup", "status", "api router started again....", "host", api.Addr)
+		log.Info(ctx, "startup", "status", "api server started....", "host", api.Addr)
 
 		serverErrors <- api.ListenAndServe()
 	}()

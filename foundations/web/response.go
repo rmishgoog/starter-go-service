@@ -11,7 +11,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, data any, statusCode in
 	// ctx, span := AddSpan(ctx, "foundation.web.response", attribute.Int("status", statusCode))
 	// defer span.End()
 
-	// setStatusCode(ctx, statusCode)
+	setStatusCode(ctx, statusCode)
 
 	if statusCode == http.StatusNoContent {
 		w.WriteHeader(statusCode)
