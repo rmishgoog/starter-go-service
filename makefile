@@ -46,8 +46,7 @@ run-help:
 # ===========================================================================
 # Generate a private key for the purpose of signing the jwt token
 run-keygen:
-	go run app/tooling/sales-admin/main.go | go run app/tooling/logfmt/main.go
-
+	go run app/tooling/sales-admin/main.go
 # ============================================================================
 # Use openssl to generate the public-private key pair instead
 run-openssl:

@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 
 func gentoken() error {
 
-	pk, err := genkey()
+	privateKey, err := genkey()
 	if err != nil {
 		return fmt.Errorf("error getting the private key for signing the token: %w", err)
 	}
@@ -39,16 +39,17 @@ func gentoken() error {
 		},
 		Roles: []string{"ADMIN"},
 	}
-	method := jwt.GetSigningMethod(jwt.SigningMethodES256.Name)
+	method := jwt.GetSigningMethod(jwt.SigningMethodRS256.Name)
+
 	token := jwt.NewWithClaims(method, claims)
 	token.Header["kid"] = "54bb2165-71e1-41a6-af3e-7da4a0e1e2c1"
 
-	str, err := token.SignedString(pk)
+	str, err := token.SignedString(privateKey)
 	if err != nil {
 		return fmt.Errorf("signing token: %w", err)
 	}
 
-	fmt.Println("****************")
+	fmt.Println("********Signed JWT Token********")
 	fmt.Println(str)
 	fmt.Println("****************")
 
@@ -59,49 +60,49 @@ func genkey() (*rsa.PrivateKey, error) {
 
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		return nil, fmt.Errorf("generating private key failed with error: %w", err)
+		return nil, fmt.Errorf("generating key: %w", err)
 	}
-
+	//Create a file for the private key information in PEM form.
 	privateFile, err := os.Create("private.pem")
 	if err != nil {
-		return nil, fmt.Errorf("could not create the private key file: %w", err)
+		return nil, fmt.Errorf("creating private file: %w", err)
 	}
 	defer privateFile.Close()
 
+	//Construct a PEM block for the private key.
 	privateBlock := pem.Block{
 		Type:  "PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
 	}
+	//Write the private key to the private key file.
 
 	if err := pem.Encode(privateFile, &privateBlock); err != nil {
-		return nil, fmt.Errorf("encoding private key file failed with error: %w", err)
+		return nil, fmt.Errorf("encoding to private file: %w", err)
 	}
 
+	//Create a file for the public key information in PEM form.
 	publicFile, err := os.Create("public.pem")
 	if err != nil {
 		return nil, fmt.Errorf("creating public file: %w", err)
 	}
 	defer publicFile.Close()
 
-	// Marshal the public key from the private key to PKIX.
+	//Marshal the public key from the private key to PKIX.
 	asn1Bytes, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling public key: %w", err)
 	}
 
-	// Construct a PEM block for the public key.
+	//Construct a PEM block for the public key.
 	publicBlock := pem.Block{
 		Type:  "PUBLIC KEY",
 		Bytes: asn1Bytes,
 	}
-
+	//Write the public key to the public key file.
 	if err := pem.Encode(publicFile, &publicBlock); err != nil {
 		return nil, fmt.Errorf("encoding to public file: %w", err)
 	}
-
-	if err := pem.Encode(publicFile, &publicBlock); err != nil {
-		return nil, fmt.Errorf("encoding to public file: %w", err)
-	}
-
+	fmt.Println("**************************************")
+	fmt.Println("private and public key files generated")
 	return privateKey, nil
 }
