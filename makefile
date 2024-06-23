@@ -44,6 +44,17 @@ run-help:
 # ===========================================================================
 
 # ===========================================================================
+# Generate a private key for the purpose of signing the jwt token
+run-keygen:
+	go run app/tooling/sales-admin/main.go | go run app/tooling/logfmt/main.go
+
+# ============================================================================
+# Use openssl to generate the public-private key pair instead
+run-openssl:
+	openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+	openssl rsa -pubout -in private.pem -out public.pem
+
+# ===========================================================================
 # Start or stop a local kind kubernetes cluster (local environment bootstrap or tear down)
 dev-up:
 	kind create cluster \
