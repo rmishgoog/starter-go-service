@@ -43,7 +43,7 @@ func main() {
 
 	log = logger.NewWithEvents(os.Stdout, logger.LevelInfo, "SALES-API", traceIDFunc, events)
 
-	ctx := context.Background()
+	ctx := context.Background() // Parent context as a background.
 
 	if err := run(ctx, log); err != nil {
 		log.Error(ctx, "startup", "msg", err)
