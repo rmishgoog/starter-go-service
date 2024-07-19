@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/rmishgoog/starter-go-service/foundations/logger"
 )
@@ -187,6 +188,20 @@ func (a *Auth) opaPolicyEvaluation(ctx context.Context, opaPolicy string, rule s
 	result, ok := results[0].Bindings["x"].(bool)
 	if !ok || !result {
 		return fmt.Errorf("bindings results[%v] ok[%v]", results, ok)
+	}
+
+	return nil
+}
+
+func (a *Auth) Authorize(ctx context.Context, claims Claims, userID uuid.UUID, rule string) error {
+	input := map[string]any{
+		"Roles":   claims.Roles,
+		"Subject": claims.Subject,
+		"UserID":  userID,
+	}
+
+	if err := a.opaPolicyEvaluation(ctx, opaAuthorization, rule, input); err != nil {
+		return fmt.Errorf("rego evaluation failed : %w", err)
 	}
 
 	return nil
